@@ -4,3 +4,8 @@ import * as moment from 'moment';
 export function now (): string {
   return moment().format('YYYY/MM/DDTHH:mm:ss');
 }
+
+// 今天的日期
+export function today (): string {
+  return moment().format('YYYYMMDD');
+}

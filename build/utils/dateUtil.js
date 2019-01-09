@@ -6,4 +6,9 @@ function now() {
     return moment().format('YYYY/MM/DDTHH:mm:ss');
 }
 exports.now = now;
+// 今天的日期
+function today() {
+    return moment().format('YYYYMMDD');
+}
+exports.today = today;
 //# sourceMappingURL=dateUtil.js.map

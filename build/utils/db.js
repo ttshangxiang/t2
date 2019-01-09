@@ -15,12 +15,7 @@ const path = require("path");
 let url;
 const filePath = path.resolve(__dirname, '../../../mongodb.txt');
 function loadUrl() {
-    try {
-        return fs.readFileSync(filePath).toString('utf-8');
-    }
-    catch (error) {
-        console.log(error);
-    }
+    return fs.readFileSync(filePath).toString('utf-8');
 }
 // Database name
 const dbName = 'ttsx';

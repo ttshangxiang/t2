@@ -6,16 +6,30 @@ import * as Busboy from 'busboy';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
+import { ObjectId } from 'mongodb';
 
-function tmpName (filename: string) {
-  const nameList = filename.split('.');
-  const suffix = nameList[nameList.length - 1];
-  return Math.random().toString(16).substr(2) + '.' + suffix;
+function getTmpFile (filename: string) {
+  const index = filename.lastIndexOf('.');
+  let suffix = '';
+  const name = new ObjectId().toHexString();
+  let newFile = name;
+  if (index > -1) {
+    suffix = filename.substr(index + 1).toLowerCase();
+    newFile += '.' + suffix;
+  }
+  return {
+    suffix: suffix,
+    name: name,
+    filename: newFile
+  }
 }
 
 export interface i_file {
   fieldname: string,
-  path: string
+  path: string,
+  suffix: string,
+  name: string,
+  filename: string
 }
 
 export interface i_result {
@@ -31,10 +45,11 @@ export default (ctx: ParameterizedContext) => {
     const result: i_result = {};
     const files: i_file[] = [];
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-      var saveTo = path.join(os.tmpdir(), tmpName(filename));
+      const tmpfile = getTmpFile(filename);
+      const saveTo = path.join(os.tmpdir(), tmpfile.filename);
       file.pipe(fs.createWriteStream(saveTo));
       file.on('end', () => {
-        files.push({fieldname, path: saveTo});
+        files.push({fieldname, path: saveTo, ...tmpfile});
       })
     });
     busboy.on('field', (fieldname, val, fieldnameTruncated, valTruncated) => {

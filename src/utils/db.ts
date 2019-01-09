@@ -6,11 +6,7 @@ import * as path from 'path';
 let url: string;
 const filePath = path.resolve(__dirname, '../../../mongodb.txt');
 function loadUrl () {
-  try {
-    return fs.readFileSync(filePath).toString('utf-8');
-  } catch (error) {
-    console.log(error);
-  }
+  return fs.readFileSync(filePath).toString('utf-8');
 }
 // Database name
 const dbName = 'ttsx';
