@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/modules/neteast/index.ts"],"names":[],"mappings":";;AACA,qCAAqC;AACrC,6CAAuC;AACvC,iCAAkC;AAClC,MAAM,MAAM,GAAG,IAAI,MAAM,CAAC;IACxB,MAAM,EAAE,UAAU;CACnB,CAAC,CAAC;AAEH,iBAAU,CAAC,MAAM,EAAE,oBAAW,CAAC,CAAC;AAChC,MAAM,CAAC,GAAG,CAAC,cAAc,EAAE,oBAAW,CAAC,WAAW,CAAC,CAAC;AAEpD,kBAAe,MAAM,CAAC"}

@@ -1,0 +1,36 @@
+{
+  "name": "t2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "tsc -w | nodemon --watch build --delay 1 build/app.js",
+    "build": "tsc",
+    "pm2": "pm2 delete t2 && pm2 start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttshangxiang/t2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ttshangxiang/t2/issues"
+  },
+  "homepage": "https://github.com/ttshangxiang/t2#readme",
+  "dependencies": {
+    "@types/koa": "^2.0.48",
+    "@types/koa-bodyparser": "^4.2.1",
+    "@types/koa-router": "^7.0.37",
+    "@types/mongodb": "^3.1.18",
+    "koa": "^2.6.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "moment": "^2.23.0",
+    "mongodb": "^3.1.10",
+    "nodemon": "^1.18.9",
+    "pm2": "^3.2.4",
+    "request": "^2.88.0"
+  }
+}
