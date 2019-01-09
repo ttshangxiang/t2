@@ -6,8 +6,11 @@ const router = new Router({
   prefix: '/xucaiyun'
 });
 
-// 默认接口
-crud(router, 'albums', 'cru');
+// 相册
+crud(router, 'albums');
+
+// 相片
+crud(router, 'photos');
 
 
 base.use(router.routes());

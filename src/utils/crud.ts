@@ -1,6 +1,7 @@
 import * as Router from 'koa-router';
 import DB from './db';
 import { ObjectId } from 'mongodb';
+import * as dateUtil from './dateUtil';
 
 export default function (router: Router, model: string, method: string = 'crud') {
 
@@ -16,6 +17,8 @@ export default function (router: Router, model: string, method: string = 'crud')
           filters[k] = new RegExp(filters[k].substr(5));
         }
       });
+      // 状态0，正常
+      filters.status = 0;
       const total = await DB(async (db) => {
         return await db
           .collection(model)
@@ -41,7 +44,7 @@ export default function (router: Router, model: string, method: string = 'crud')
       const r = await DB(async (db) => {
         return await db
           .collection(model)
-          .findOne({ _id: new ObjectId(id) });
+          .findOne({ _id: new ObjectId(id), status: 0 });
       }) || {};
       ctx.body = { code: 0, data: r };
     });
@@ -50,18 +53,46 @@ export default function (router: Router, model: string, method: string = 'crud')
   // 新增
   method.includes('c') &&
   router.post(`/${model}`, async (ctx) => {
-    ctx.body = '新增';
+    const body = ctx.request.body;
+    body.ctime = body.utime = dateUtil.now();
+    // 状态0，正常
+    body.status = 0;
+    const r = await DB(async (db) => {
+      return await db
+        .collection(model)
+        .insertOne(body);
+    });
+    ctx.body = { code: 0, data: r };
   });
 
   // 修改
   method.includes('u') &&
-  router.put(`/${model}`, async (ctx) => {
-    ctx.body = '修改';
+  router.put(`/${model}/:id`, async (ctx) => {
+    const body = ctx.request.body;
+    const id = ctx.params.id;
+    body.utime = dateUtil.now();
+    const r = await DB(async (db) => {
+      return await db
+        .collection(model)
+        .updateOne({_id: new ObjectId(id)}, {$set: body});
+    });
+    ctx.body = { code: 0, data: r };
   });
 
-  // 删除
+  // 删除：软
   method.includes('d') &&
   router.delete(`/${model}`, async (ctx) => {
-    ctx.body = '删除';
+    let id: string | string[] = ctx.query.id;
+    typeof id === 'string' && (id = [id]);
+    const ids = id.map(o => new ObjectId(o));
+    // 删除状态 -1
+    const body: any = { status: -1 };
+    body.utime = dateUtil.now();
+    const r = await DB(async (db) => {
+      return await db
+        .collection(model)
+        .updateMany({_id: {$in: ids}}, {$set: body});
+    });
+    ctx.body = { code: 0, data: r };
   });
 }

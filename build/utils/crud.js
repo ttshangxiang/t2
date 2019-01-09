@@ -19,6 +19,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("./db");
 const mongodb_1 = require("mongodb");
+const dateUtil = require("./dateUtil");
 function default_1(router, model, method = 'crud') {
     // 查询
     if (method.includes('r')) {
@@ -32,6 +33,8 @@ function default_1(router, model, method = 'crud') {
                     filters[k] = new RegExp(filters[k].substr(5));
                 }
             });
+            // 状态0，正常
+            filters.status = 0;
             const total = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)
@@ -56,7 +59,7 @@ function default_1(router, model, method = 'crud') {
             const r = (yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)
-                    .findOne({ _id: new mongodb_1.ObjectId(id) });
+                    .findOne({ _id: new mongodb_1.ObjectId(id), status: 0 });
             }))) || {};
             ctx.body = { code: 0, data: r };
         }));
@@ -64,17 +67,45 @@ function default_1(router, model, method = 'crud') {
     // 新增
     method.includes('c') &&
         router.post(`/${model}`, (ctx) => __awaiter(this, void 0, void 0, function* () {
-            ctx.body = '新增';
+            const body = ctx.request.body;
+            body.ctime = body.utime = dateUtil.now();
+            // 状态0，正常
+            body.status = 0;
+            const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+                return yield db
+                    .collection(model)
+                    .insertOne(body);
+            }));
+            ctx.body = { code: 0, data: r };
         }));
     // 修改
     method.includes('u') &&
-        router.put(`/${model}`, (ctx) => __awaiter(this, void 0, void 0, function* () {
-            ctx.body = '修改';
+        router.put(`/${model}/:id`, (ctx) => __awaiter(this, void 0, void 0, function* () {
+            const body = ctx.request.body;
+            const id = ctx.params.id;
+            body.utime = dateUtil.now();
+            const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+                return yield db
+                    .collection(model)
+                    .updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: body });
+            }));
+            ctx.body = { code: 0, data: r };
         }));
-    // 删除
+    // 删除：软
     method.includes('d') &&
         router.delete(`/${model}`, (ctx) => __awaiter(this, void 0, void 0, function* () {
-            ctx.body = '删除';
+            let id = ctx.query.id;
+            typeof id === 'string' && (id = [id]);
+            const ids = id.map(o => new mongodb_1.ObjectId(o));
+            // 删除状态 -1
+            const body = { status: -1 };
+            body.utime = dateUtil.now();
+            const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+                return yield db
+                    .collection(model)
+                    .updateMany({ _id: { $in: ids } }, { $set: body });
+            }));
+            ctx.body = { code: 0, data: r };
         }));
 }
 exports.default = default_1;
