@@ -24,7 +24,7 @@ function move(from, to) {
             !fs.existsSync(base) && mkdirp.sync(base);
             try {
                 fs.renameSync(from, to);
-                resolve();
+                resolve(to);
             }
             catch (error) {
                 const rs = fs.createReadStream(from);
@@ -35,7 +35,6 @@ function move(from, to) {
                     resolve(to);
                 });
                 rs.on('error', err => {
-                    console.log(err);
                     reject(err);
                 });
             }

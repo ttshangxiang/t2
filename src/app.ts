@@ -5,6 +5,7 @@ import * as bodyParser from 'koa-bodyparser';
 
 const app = new Koa();
 
+// 错误返回
 app.use(async(ctx, next) => {
   try {
     await next();
@@ -24,7 +25,13 @@ app.use(async(ctx, next) => {
   }
 });
 
+// 错误捕获
 app.on('error', err => {
+  console.log(err);
+});
+
+// 未catch的Promise
+process.on('unhandledRejection', err => {
   console.log(err);
 });
 

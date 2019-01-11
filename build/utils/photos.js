@@ -11,83 +11,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sharp = require("sharp");
 /**
  * 获取图片信息
- * @param path 图片路径
+ * @param pathname 图片路径
  */
-function getImageInfo(path) {
+function getImageInfo(pathname) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            sharp(path)
-                .metadata((err, metadata) => {
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                }
-                else {
-                    resolve(metadata);
-                }
-            });
-        });
+        return yield sharp(pathname).metadata();
     });
 }
 exports.getImageInfo = getImageInfo;
-function appendPath(path, appends) {
-    const index = path.lastIndexOf('.');
+function appendPath(pathname, appends) {
+    const index = pathname.lastIndexOf('.');
     let path_ = '';
     if (index > -1) {
-        path_ = path.substr(0, index - 1) + '-' + appends + path.substr(index);
+        path_ = pathname.substr(0, index - 1) + '-' + appends + pathname.substr(index);
     }
     else {
-        path_ = path.substr(0, index - 1) + '-' + appends;
+        path_ = pathname.substr(0, index - 1) + '-' + appends;
     }
     return path_;
 }
 /**
  * 获取缩略图
- * @param path
+ * @param pathname
  */
-function getThumb(path) {
+function getThumb(pathname) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            const newPath = appendPath(path, 'thumb');
-            sharp(path)
-                .resize(240)
-                .toFile(newPath, (err) => {
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                }
-                else {
-                    resolve(newPath);
-                }
-            });
-        });
+        const newPath = appendPath(pathname, 'thumb');
+        yield sharp(pathname).resize(240).toFile(newPath);
+        return newPath;
     });
 }
 exports.getThumb = getThumb;
 /**
  * 获取720P
- * @param path
+ * @param pathname
  */
-function get720p(path) {
+function get720p(pathname) {
     return __awaiter(this, void 0, void 0, function* () {
-        const metadata = yield getImageInfo(path);
-        return new Promise((resolve, reject) => {
-            let width = 1280;
-            if (metadata.width <= 1280) {
-                width = metadata.width;
-            }
-            const newPath = appendPath(path, '720');
-            sharp(path)
-                .resize(width)
-                .toFile(newPath, (err) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(newPath);
-                }
-            });
-        });
+        const metadata = yield getImageInfo(pathname);
+        let width = 1280;
+        if (metadata.width <= 1280) {
+            width = metadata.width;
+        }
+        const newPath = appendPath(pathname, '720');
+        yield sharp(pathname).resize(width).toFile(newPath);
+        return newPath;
     });
 }
 exports.get720p = get720p;

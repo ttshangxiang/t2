@@ -13,6 +13,7 @@ const base_1 = require("./modules/base");
 require("./modules");
 const bodyParser = require("koa-bodyparser");
 const app = new Koa();
+// 错误返回
 app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         yield next();
@@ -33,7 +34,12 @@ app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
         console.log(err);
     }
 }));
+// 错误捕获
 app.on('error', err => {
+    console.log(err);
+});
+// 未catch的Promise
+process.on('unhandledRejection', err => {
     console.log(err);
 });
 app.use(bodyParser());

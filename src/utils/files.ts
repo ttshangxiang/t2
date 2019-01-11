@@ -14,7 +14,7 @@ export async function move (from: string, to: string) {
     !fs.existsSync(base) && mkdirp.sync(base);
     try {
       fs.renameSync(from, to);
-      resolve();
+      resolve(to);
     } catch (error) {
       const rs = fs.createReadStream(from);
       const ws = fs.createWriteStream(to);
@@ -24,9 +24,8 @@ export async function move (from: string, to: string) {
         resolve(to);
       });
       rs.on('error', err => {
-        console.log(err);
         reject(err);
       })
     }
-  })
+  });
 }
