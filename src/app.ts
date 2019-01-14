@@ -10,6 +10,7 @@ app.use(async(ctx, next) => {
   try {
     await next();
     if (ctx.status === 404) {
+      ctx.status = 404;
       ctx.body = { code: 404, message: 'Not Found' };
     } else {
       let body = ctx.body;
@@ -20,6 +21,7 @@ app.use(async(ctx, next) => {
       ctx.body = body;
     }
   } catch (err) {
+    ctx.status = 500;
     ctx.body = { code: 500, message: err.message };
     console.log(err);
   }

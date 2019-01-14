@@ -18,6 +18,7 @@ app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         yield next();
         if (ctx.status === 404) {
+            ctx.status = 404;
             ctx.body = { code: 404, message: 'Not Found' };
         }
         else {
@@ -30,6 +31,7 @@ app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
         }
     }
     catch (err) {
+        ctx.status = 500;
         ctx.body = { code: 500, message: err.message };
         console.log(err);
     }
