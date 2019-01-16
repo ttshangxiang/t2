@@ -29,3 +29,13 @@ export async function move (from: string, to: string) {
     }
   });
 }
+
+/**
+ * 删除文件
+ */
+export async function unlink (from: string) {
+  return new Promise ((resolve, reject) => {
+    fs.unlinkSync(from);
+    resolve(from);
+  });
+}

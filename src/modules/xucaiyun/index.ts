@@ -4,7 +4,7 @@ import * as path from 'path';
 import { today } from '../../utils/dateUtil';
 import crud from '../../utils/crud';
 import upload, { i_result } from '../../utils/upload';
-import { move } from '../../utils/files';
+import { move, unlink } from '../../utils/files';
 import { getThumb, get720p } from '../../utils/photos';
 import DB from '../../utils/db';
 import * as dateUtil from '../../utils/dateUtil';
@@ -19,11 +19,20 @@ crud(router, 'albums');
 // 相片
 router.post('/photos', async (ctx) => {
   const {files, ...body} = <i_result> await upload(ctx);
-  const dest = path.resolve(__dirname, '../../../uploads/photos', today());
+  const t2 = path.resolve(__dirname, '../../../');
+  const dest = path.resolve(t2, './uploads/photos', today());
   for (const o of files) {
-    body.origin = await move(o.path, path.resolve(dest, o.filename));
-    body.normal = await get720p(body.origin);
-    body.thumb = await getThumb(body.origin);
+    // 只支持一张图片
+    if (o === files[0]) {
+      body.origin = await move(o.path, path.resolve(dest, o.filename));
+      body.normal = await get720p(body.origin);
+      body.thumb = await getThumb(body.origin);
+      body.origin = path.join('/', path.relative(t2, body.origin));
+      body.normal = path.join('/', path.relative(t2, body.normal));
+      body.thumb = path.join('/', path.relative(t2, body.thumb));
+    } else {
+      await unlink(o.path);
+    }
   }
   body.ctime = body.utime = dateUtil.now();
   // 状态0，正常

@@ -35,11 +35,21 @@ crud_1.default(router, 'albums');
 // 相片
 router.post('/photos', (ctx) => __awaiter(this, void 0, void 0, function* () {
     const _a = yield upload_1.default(ctx), { files } = _a, body = __rest(_a, ["files"]);
-    const dest = path.resolve(__dirname, '../../../uploads/photos', dateUtil_1.today());
+    const t2 = path.resolve(__dirname, '../../../');
+    const dest = path.resolve(t2, './uploads/photos', dateUtil_1.today());
     for (const o of files) {
-        body.origin = yield files_1.move(o.path, path.resolve(dest, o.filename));
-        body.normal = yield photos_1.get720p(body.origin);
-        body.thumb = yield photos_1.getThumb(body.origin);
+        // 只支持一张图片
+        if (o === files[0]) {
+            body.origin = yield files_1.move(o.path, path.resolve(dest, o.filename));
+            body.normal = yield photos_1.get720p(body.origin);
+            body.thumb = yield photos_1.getThumb(body.origin);
+            body.origin = path.join('/', path.relative(t2, body.origin));
+            body.normal = path.join('/', path.relative(t2, body.normal));
+            body.thumb = path.join('/', path.relative(t2, body.thumb));
+        }
+        else {
+            yield files_1.unlink(o.path);
+        }
     }
     body.ctime = body.utime = dateUtil.now();
     // 状态0，正常

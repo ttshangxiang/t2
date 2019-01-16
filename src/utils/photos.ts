@@ -13,9 +13,9 @@ function appendPath (pathname: string, appends: string) {
   const index = pathname.lastIndexOf('.');
   let path_ = '';
   if (index > -1) {
-    path_ = pathname.substr(0, index - 1) + '-' + appends + pathname.substr(index);
+    path_ = pathname.substr(0, index) + '-' + appends + pathname.substr(index);
   } else {
-    path_ = pathname.substr(0, index - 1) + '-' + appends;
+    path_ = pathname.substr(0, index) + '-' + appends;
   }
   return path_;
 }

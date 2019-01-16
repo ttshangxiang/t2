@@ -42,4 +42,16 @@ function move(from, to) {
     });
 }
 exports.move = move;
+/**
+ * 删除文件
+ */
+function unlink(from) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            fs.unlinkSync(from);
+            resolve(from);
+        });
+    });
+}
+exports.unlink = unlink;
 //# sourceMappingURL=files.js.map

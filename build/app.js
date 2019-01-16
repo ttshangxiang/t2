@@ -12,7 +12,9 @@ const Koa = require("koa");
 const base_1 = require("./modules/base");
 require("./modules");
 const bodyParser = require("koa-bodyparser");
+const serve = require("koa-static");
 const app = new Koa();
+app.use(serve('.'));
 // 错误返回
 app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
     try {

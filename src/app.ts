@@ -2,8 +2,11 @@ import * as Koa from 'koa';
 import base from './modules/base';
 import './modules';
 import * as bodyParser from 'koa-bodyparser';
+import * as serve from 'koa-static';
 
 const app = new Koa();
+
+app.use(serve('.'));
 
 // 错误返回
 app.use(async(ctx, next) => {
