@@ -46,6 +46,32 @@ router.post('/photos', async (ctx) => {
 });
 crud(router, 'photos');
 
+// 资源
+router.post('/res', async (ctx) => {
+  const {files, ...body} = <i_result> await upload(ctx);
+  const t2 = path.resolve(__dirname, '../../../');
+  const dest = path.resolve(t2, './uploads/res', today());
+  for (const o of files) {
+    // 只支持一个文件
+    if (o === files[0]) {
+      body.origin = await move(o.path, path.resolve(dest, o.filename));
+      body.origin = path.join('/', path.relative(t2, body.origin));
+    } else {
+      await unlink(o.path);
+    }
+  }
+  body.ctime = body.utime = dateUtil.now();
+  // 状态0，正常
+  body.status = 0;
+  const r = await DB(async (db) => {
+    return await db
+      .collection('res')
+      .insertOne(body);
+  });
+  ctx.body = { code: 0, data: r };
+});
+crud(router, 'res');
+
 
 base.use(router.routes());
 base.use(router.allowedMethods());

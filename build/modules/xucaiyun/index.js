@@ -62,6 +62,32 @@ router.post('/photos', (ctx) => __awaiter(this, void 0, void 0, function* () {
     ctx.body = { code: 0, data: r };
 }));
 crud_1.default(router, 'photos');
+// 资源
+router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    const _b = yield upload_1.default(ctx), { files } = _b, body = __rest(_b, ["files"]);
+    const t2 = path.resolve(__dirname, '../../../');
+    const dest = path.resolve(t2, './uploads/res', dateUtil_1.today());
+    for (const o of files) {
+        // 只支持一个文件
+        if (o === files[0]) {
+            body.origin = yield files_1.move(o.path, path.resolve(dest, o.filename));
+            body.origin = path.join('/', path.relative(t2, body.origin));
+        }
+        else {
+            yield files_1.unlink(o.path);
+        }
+    }
+    body.ctime = body.utime = dateUtil.now();
+    // 状态0，正常
+    body.status = 0;
+    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        return yield db
+            .collection('res')
+            .insertOne(body);
+    }));
+    ctx.body = { code: 0, data: r };
+}));
+crud_1.default(router, 'res');
 base_1.default.use(router.routes());
 base_1.default.use(router.allowedMethods());
 //# sourceMappingURL=index.js.map
