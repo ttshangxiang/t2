@@ -1,6 +1,6 @@
 import * as Router from 'koa-router';
 import DB from './db';
-import { ObjectId } from 'mongodb';
+import { ObjectId, InsertOneWriteOpResult } from 'mongodb';
 import * as dateUtil from './dateUtil';
 
 export default function (router: Router, model: string, method: string = 'crud') {
@@ -12,13 +12,18 @@ export default function (router: Router, model: string, method: string = 'crud')
       const { query = {} } = ctx;
       const { offset = 0, count = 200, ...filters } = query;
       Object.keys(filters).forEach(k => {
+        const item: string = filters[k];
         // 模糊查询
-        if (filters[k].substr(0,5) === 'like.') {
-          filters[k] = new RegExp(filters[k].substr(5));
+        if (item.substr(0,5) === 'like.') {
+          filters[k] = new RegExp(item.substr(5));
+        }
+        // 被包含
+        if (item.substr(0,9) === 'includes.') {
+          filters[k] = {$elemMatch: {$eq: item.substr(9)}}
         }
       });
-      // 状态0，正常
-      filters.status = 0;
+      // 状态非-1，正常
+      filters.status = {$ne: -1};
       const total = await DB(async (db) => {
         return await db
           .collection(model)
@@ -29,7 +34,7 @@ export default function (router: Router, model: string, method: string = 'crud')
         return await db
           .collection(model)
           .find(filters)
-          .sort({utime: -1})
+          .sort({ctime: -1})
           .skip(+offset)
           .limit(+count)
           .toArray();
@@ -57,12 +62,12 @@ export default function (router: Router, model: string, method: string = 'crud')
     body.ctime = body.utime = dateUtil.now();
     // 状态0，正常
     body.status = 0;
-    const r = await DB(async (db) => {
+    const r = <InsertOneWriteOpResult>await DB(async (db) => {
       return await db
         .collection(model)
         .insertOne(body);
     });
-    ctx.body = { code: 0, data: r };
+    ctx.body = { code: 0, data: r, _id: r.insertedId };
   });
 
   // 修改

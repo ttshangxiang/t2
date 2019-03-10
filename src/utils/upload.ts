@@ -29,7 +29,8 @@ export interface i_file {
   path: string,
   suffix: string,
   name: string,
-  filename: string
+  filename: string,
+  type?: string
 }
 
 export interface i_result {

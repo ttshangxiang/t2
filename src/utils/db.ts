@@ -8,14 +8,13 @@ const filePath = path.resolve(__dirname, '../../../mongodb.txt');
 function loadUrl () {
   return fs.readFileSync(filePath).toString('utf-8');
 }
-// Database name
-const dbName = 'ttsx';
 
 type operation = (db: Db) => object | [];
 export default async function(operation: operation) {
   !url && (url = loadUrl());
   const client = await MongoClient.connect(url, { useNewUrlParser: true });
-  const db = client.db(dbName);
+  const arr = url.split('/');
+  const db = client.db(arr[arr.length -1]);
   const result = await operation(db);
   if (client) {
     client.close();

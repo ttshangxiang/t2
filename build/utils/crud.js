@@ -28,13 +28,18 @@ function default_1(router, model, method = 'crud') {
             const { query = {} } = ctx;
             const { offset = 0, count = 200 } = query, filters = __rest(query, ["offset", "count"]);
             Object.keys(filters).forEach(k => {
+                const item = filters[k];
                 // 模糊查询
-                if (filters[k].substr(0, 5) === 'like.') {
-                    filters[k] = new RegExp(filters[k].substr(5));
+                if (item.substr(0, 5) === 'like.') {
+                    filters[k] = new RegExp(item.substr(5));
+                }
+                // 被包含
+                if (item.substr(0, 9) === 'includes.') {
+                    filters[k] = { $elemMatch: { $eq: item.substr(9) } };
                 }
             });
-            // 状态0，正常
-            filters.status = 0;
+            // 状态非-1，正常
+            filters.status = { $ne: -1 };
             const total = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)
@@ -45,7 +50,7 @@ function default_1(router, model, method = 'crud') {
                 return yield db
                     .collection(model)
                     .find(filters)
-                    .sort({ utime: -1 })
+                    .sort({ ctime: -1 })
                     .skip(+offset)
                     .limit(+count)
                     .toArray();
@@ -76,7 +81,7 @@ function default_1(router, model, method = 'crud') {
                     .collection(model)
                     .insertOne(body);
             }));
-            ctx.body = { code: 0, data: r };
+            ctx.body = { code: 0, data: r, _id: r.insertedId };
         }));
     // 修改
     method.includes('u') &&

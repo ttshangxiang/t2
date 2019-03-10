@@ -17,13 +17,12 @@ const filePath = path.resolve(__dirname, '../../../mongodb.txt');
 function loadUrl() {
     return fs.readFileSync(filePath).toString('utf-8');
 }
-// Database name
-const dbName = 'ttsx';
 function default_1(operation) {
     return __awaiter(this, void 0, void 0, function* () {
         !url && (url = loadUrl());
         const client = yield mongodb_1.MongoClient.connect(url, { useNewUrlParser: true });
-        const db = client.db(dbName);
+        const arr = url.split('/');
+        const db = client.db(arr[arr.length - 1]);
         const result = yield operation(db);
         if (client) {
             client.close();
