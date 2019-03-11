@@ -6,7 +6,7 @@ import { today } from '../../utils/dateUtil';
 import crud from '../../utils/crud';
 import upload, { i_result } from '../../utils/upload';
 import { move, unlink } from '../../utils/files';
-import { getThumb, get720p, getImageInfo } from '../../utils/photos';
+import { getThumb, getNormal, getImageInfo } from '../../utils/photos';
 import DB from '../../utils/db';
 import * as dateUtil from '../../utils/dateUtil';
 
@@ -28,7 +28,7 @@ router.post('/res', async (ctx) => {
         body.width = metadata.width;
         body.height = metadata.height;
         // 压缩
-        body.normal = await get720p(body.path);
+        body.normal = await getNormal(body.path);
         body.thumb = await getThumb(body.path);
         body.normal = path.join('/', path.relative(t2, body.normal));
         body.thumb = path.join('/', path.relative(t2, body.thumb));

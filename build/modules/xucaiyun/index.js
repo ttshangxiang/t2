@@ -45,7 +45,7 @@ router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
                 body.width = metadata.width;
                 body.height = metadata.height;
                 // 压缩
-                body.normal = yield photos_1.get720p(body.path);
+                body.normal = yield photos_1.getNormal(body.path);
                 body.thumb = yield photos_1.getThumb(body.path);
                 body.normal = path.join('/', path.relative(t2, body.normal));
                 body.thumb = path.join('/', path.relative(t2, body.thumb));

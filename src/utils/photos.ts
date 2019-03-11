@@ -21,26 +21,34 @@ function appendPath (pathname: string, appends: string) {
 }
 
 /**
- * 获取缩略图
- * @param pathname 
+ * 压缩图片
+ * @param pathname 源文件路径
+ * @param width 压缩宽度
+ * @returns 压缩后的文件路径
  */
-export async function getThumb (pathname: string) {
-  const newPath = appendPath(pathname, 'thumb');
-  await sharp(pathname).resize(240).toFile(newPath);
+async function compress (pathname: string, width: number) {
+  const metadata = await getImageInfo(pathname);
+  // 小于压缩大小，返回原路径
+  if (metadata.width <= width) {
+    return pathname;
+  }
+  const newPath = appendPath(pathname, width + '');
+  await sharp(pathname).resize(width).toFile(newPath);
   return newPath;
 }
 
 /**
- * 获取720P
+ * 获取缩略图
  * @param pathname 
  */
-export async function get720p (pathname: string) {
-  const metadata = await getImageInfo(pathname);
-  let width = 1280
-  if (metadata.width <= 1280) {
-    width = metadata.width;
-  }
-  const newPath = appendPath(pathname, '720');
-  await sharp(pathname).resize(width).toFile(newPath);
-  return newPath;
+export async function getThumb (pathname: string) {
+  return await compress(pathname, 360);
+}
+
+/**
+ * 获取正常大小
+ * @param pathname 
+ */
+export async function getNormal (pathname: string) {
+  return await compress(pathname, 1280);
 }

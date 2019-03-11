@@ -31,32 +31,41 @@ function appendPath(pathname, appends) {
     return path_;
 }
 /**
+ * 压缩图片
+ * @param pathname 源文件路径
+ * @param width 压缩宽度
+ * @returns 压缩后的文件路径
+ */
+function compress(pathname, width) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const metadata = yield getImageInfo(pathname);
+        // 小于压缩大小，返回原路径
+        if (metadata.width <= width) {
+            return pathname;
+        }
+        const newPath = appendPath(pathname, width + '');
+        yield sharp(pathname).resize(width).toFile(newPath);
+        return newPath;
+    });
+}
+/**
  * 获取缩略图
  * @param pathname
  */
 function getThumb(pathname) {
     return __awaiter(this, void 0, void 0, function* () {
-        const newPath = appendPath(pathname, 'thumb');
-        yield sharp(pathname).resize(240).toFile(newPath);
-        return newPath;
+        return yield compress(pathname, 360);
     });
 }
 exports.getThumb = getThumb;
 /**
- * 获取720P
+ * 获取正常大小
  * @param pathname
  */
-function get720p(pathname) {
+function getNormal(pathname) {
     return __awaiter(this, void 0, void 0, function* () {
-        const metadata = yield getImageInfo(pathname);
-        let width = 1280;
-        if (metadata.width <= 1280) {
-            width = metadata.width;
-        }
-        const newPath = appendPath(pathname, '720');
-        yield sharp(pathname).resize(width).toFile(newPath);
-        return newPath;
+        return yield compress(pathname, 1280);
     });
 }
-exports.get720p = get720p;
+exports.getNormal = getNormal;
 //# sourceMappingURL=photos.js.map
