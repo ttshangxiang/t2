@@ -20,6 +20,7 @@ function loadUrl() {
 function default_1(operation) {
     return __awaiter(this, void 0, void 0, function* () {
         !url && (url = loadUrl());
+        url = url.replace(/[\s\n]/g, '');
         const client = yield mongodb_1.MongoClient.connect(url, { useNewUrlParser: true });
         const arr = url.split('/');
         const db = client.db(arr[arr.length - 1]);

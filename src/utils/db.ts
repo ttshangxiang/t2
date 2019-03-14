@@ -12,6 +12,7 @@ function loadUrl () {
 type operation = (db: Db) => object | [];
 export default async function(operation: operation) {
   !url && (url = loadUrl());
+  url = url.replace(/[\s\n]/g, '');
   const client = await MongoClient.connect(url, { useNewUrlParser: true });
   const arr = url.split('/');
   const db = client.db(arr[arr.length -1]);
