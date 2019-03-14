@@ -33,7 +33,11 @@ const router = new Router({
 });
 // 新增资源
 router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    const groupId = ctx.query.groupId;
     const _a = yield upload_1.default(ctx), { files } = _a, body = __rest(_a, ["files"]);
+    if (groupId) {
+        body.groups = [groupId];
+    }
     const t2 = path.resolve(__dirname, '../../../');
     const dest = path.resolve(t2, './uploads/res', dateUtil_1.today());
     for (const o of files) {

@@ -16,7 +16,11 @@ const router = new Router({
 
 // 新增资源
 router.post('/res', async (ctx) => {
+  const groupId = ctx.query.groupId;
   const {files, ...body} = <i_result> await upload(ctx);
+  if (groupId) {
+    body.groups = [groupId];
+  }
   const t2 = path.resolve(__dirname, '../../../');
   const dest = path.resolve(t2, './uploads/res', today());
   for (const o of files) {
