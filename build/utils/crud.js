@@ -37,6 +37,10 @@ function default_1(router, model, method = 'crud') {
                 if (item.substr(0, 9) === 'includes.') {
                     filters[k] = { $elemMatch: { $eq: item.substr(9) } };
                 }
+                // _id
+                if (k === '_id') {
+                    filters[k] = new mongodb_1.ObjectId(item);
+                }
             });
             // 状态非-1，正常
             filters.status = { $ne: -1 };
@@ -75,7 +79,7 @@ function default_1(router, model, method = 'crud') {
             const body = ctx.request.body;
             body.ctime = body.utime = dateUtil.now();
             // 状态0，正常
-            body.status = 0;
+            body.status = body.status || 0;
             const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)

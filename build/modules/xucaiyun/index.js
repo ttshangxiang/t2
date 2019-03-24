@@ -28,6 +28,7 @@ const files_1 = require("../../utils/files");
 const photos_1 = require("../../utils/photos");
 const db_1 = require("../../utils/db");
 const dateUtil = require("../../utils/dateUtil");
+const fs = require("fs");
 const router = new Router({
     prefix: '/xucaiyun'
 });
@@ -132,6 +133,32 @@ router.get('/albums', (ctx) => __awaiter(this, void 0, void 0, function* () {
             .toArray();
     }));
     ctx.body = { code: 0, data: r };
+}));
+// 文章类型
+router.get('/words', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        return yield db
+            .collection('resgroup')
+            .find({ status: 1, type: 'words' })
+            .sort({ ctime: -1 })
+            .toArray();
+    }));
+    ctx.body = { code: 0, data: r };
+}));
+// 硬核密码
+router.post('/res/password', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    const body = ctx.request.body;
+    let r = { code: -1, message: 'error' };
+    const filePath = path.resolve(__dirname, '../../../../respassword.txt');
+    try {
+        let pswd = fs.readFileSync(filePath).toString('utf-8');
+        pswd = pswd.replace(/[\s\n\t\r]/g, '');
+        if (body.password === pswd) {
+            r = { code: 0, message: 'success' };
+        }
+    }
+    catch (error) { }
+    ctx.body = r;
 }));
 base_1.default.use(router.routes());
 base_1.default.use(router.allowedMethods());

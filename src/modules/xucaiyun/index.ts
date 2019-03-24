@@ -9,6 +9,7 @@ import { move, unlink } from '../../utils/files';
 import { getThumb, getNormal, getImageInfo } from '../../utils/photos';
 import DB from '../../utils/db';
 import * as dateUtil from '../../utils/dateUtil';
+import * as fs from 'fs';
 
 const router = new Router({
   prefix: '/xucaiyun'
@@ -121,6 +122,33 @@ router.get('/albums', async ctx => {
       .toArray();
   });
   ctx.body = { code: 0, data: r };
+});
+
+// 文章类型
+router.get('/words', async ctx => {
+  const r:any = await DB(async (db) => {
+    return await db
+      .collection('resgroup')
+      .find({status: 1, type: 'words'})
+      .sort({ctime: -1})
+      .toArray();
+  });
+  ctx.body = { code: 0, data: r };
+});
+
+// 硬核密码
+router.post('/res/password', async ctx => {
+  const body = ctx.request.body;
+  let r = { code: -1, message: 'error'};
+  const filePath = path.resolve(__dirname, '../../../../respassword.txt');
+  try {
+    let pswd = fs.readFileSync(filePath).toString('utf-8');
+    pswd = pswd.replace(/[\s\n\t\r]/g, '');
+    if (body.password === pswd) {
+      r = { code: 0, message: 'success' };
+    }
+  } catch (error) {}
+  ctx.body = r;
 });
 
 base.use(router.routes());

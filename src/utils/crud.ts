@@ -21,6 +21,10 @@ export default function (router: Router, model: string, method: string = 'crud')
         if (item.substr(0,9) === 'includes.') {
           filters[k] = {$elemMatch: {$eq: item.substr(9)}}
         }
+        // _id
+        if (k === '_id') {
+          filters[k] = new ObjectId(item);
+        }
       });
       // 状态非-1，正常
       filters.status = {$ne: -1};
@@ -61,7 +65,7 @@ export default function (router: Router, model: string, method: string = 'crud')
     const body = ctx.request.body;
     body.ctime = body.utime = dateUtil.now();
     // 状态0，正常
-    body.status = 0;
+    body.status = body.status || 0;
     const r = <InsertOneWriteOpResult>await DB(async (db) => {
       return await db
         .collection(model)
