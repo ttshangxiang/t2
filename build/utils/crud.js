@@ -20,7 +20,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("./db");
 const mongodb_1 = require("mongodb");
 const dateUtil = require("./dateUtil");
-function default_1(router, model, method = 'crud') {
+function default_1(router, model, method = 'crud', findOptions = {}) {
     // 查询
     if (method.includes('r')) {
         // 列表
@@ -53,7 +53,7 @@ function default_1(router, model, method = 'crud') {
             const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)
-                    .find(filters)
+                    .find(filters, findOptions)
                     .sort({ ctime: -1 })
                     .skip(+offset)
                     .limit(+count)

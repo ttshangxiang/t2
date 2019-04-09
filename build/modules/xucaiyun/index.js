@@ -160,6 +160,21 @@ router.post('/res/password', (ctx) => __awaiter(this, void 0, void 0, function* 
     catch (error) { }
     ctx.body = r;
 }));
+// 评论 (查询屏蔽email)
+crud_1.default(router, 'comments', 'crud', { projection: { email: 0, 'reply.email': 0 } });
+// 回复
+router.post('/comments/reply/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    const body = ctx.request.body;
+    const id = ctx.params.id;
+    body.utime = dateUtil.now();
+    body._id = new mongodb_1.ObjectId().toHexString();
+    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        return yield db
+            .collection('comments')
+            .updateOne({ _id: new mongodb_1.ObjectId(id) }, { $push: { reply: body } });
+    }));
+    ctx.body = { code: 0, data: r };
+}));
 base_1.default.use(router.routes());
 base_1.default.use(router.allowedMethods());
 //# sourceMappingURL=index.js.map

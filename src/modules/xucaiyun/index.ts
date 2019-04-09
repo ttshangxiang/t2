@@ -151,6 +151,22 @@ router.post('/res/password', async ctx => {
   ctx.body = r;
 });
 
+// 评论 (查询屏蔽email)
+crud(router, 'comments', 'crud', {projection: {email: 0, 'reply.email': 0}});
+// 回复
+router.post('/comments/reply/:id', async ctx => {
+  const body = ctx.request.body;
+  const id = ctx.params.id;
+  body.utime = dateUtil.now();
+  body._id = new ObjectId().toHexString();
+  const r = await DB(async (db) => {
+    return await db
+      .collection('comments')
+      .updateOne({_id: new ObjectId(id)}, {$push: {reply: body}});
+  });
+  ctx.body = { code: 0, data: r };
+});
+
 base.use(router.routes());
 base.use(router.allowedMethods());
 

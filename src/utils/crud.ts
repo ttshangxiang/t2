@@ -3,7 +3,7 @@ import DB from './db';
 import { ObjectId, InsertOneWriteOpResult } from 'mongodb';
 import * as dateUtil from './dateUtil';
 
-export default function (router: Router, model: string, method: string = 'crud') {
+export default function (router: Router, model: string, method: string = 'crud', findOptions = {}) {
 
   // 查询
   if (method.includes('r')) {
@@ -37,7 +37,7 @@ export default function (router: Router, model: string, method: string = 'crud')
       const r = await DB(async (db) => {
         return await db
           .collection(model)
-          .find(filters)
+          .find(filters, findOptions)
           .sort({ctime: -1})
           .skip(+offset)
           .limit(+count)
