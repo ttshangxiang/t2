@@ -167,6 +167,9 @@ router.post('/comments/reply/:id', async ctx => {
   ctx.body = { code: 0, data: r };
 });
 
+// 生涯
+crud(router, 'shengya');
+
 base.use(router.routes());
 base.use(router.allowedMethods());
 

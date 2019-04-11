@@ -27,6 +27,9 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
         router.get(`/${model}`, (ctx) => __awaiter(this, void 0, void 0, function* () {
             const { query = {} } = ctx;
             const { offset = 0, count = 200 } = query, filters = __rest(query, ["offset", "count"]);
+            // 排序
+            // 默认排序
+            let sortObj = { ctime: -1 };
             Object.keys(filters).forEach(k => {
                 const item = filters[k];
                 // 模糊查询
@@ -41,6 +44,11 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
                 if (k === '_id') {
                     filters[k] = new mongodb_1.ObjectId(item);
                 }
+                // 携带排序信息
+                if (k.substr(0, 6) === 'order.') {
+                    sortObj = { [k.substr(6)]: +filters[k] };
+                    delete filters[k];
+                }
             });
             // 状态非-1，正常
             filters.status = { $ne: -1 };
@@ -54,7 +62,7 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
                 return yield db
                     .collection(model)
                     .find(filters, findOptions)
-                    .sort({ ctime: -1 })
+                    .sort(sortObj)
                     .skip(+offset)
                     .limit(+count)
                     .toArray();

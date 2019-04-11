@@ -11,6 +11,9 @@ export default function (router: Router, model: string, method: string = 'crud',
     router.get(`/${model}`, async (ctx) => {
       const { query = {} } = ctx;
       const { offset = 0, count = 200, ...filters } = query;
+      // 排序
+      // 默认排序
+      let sortObj: any = {ctime: -1};
       Object.keys(filters).forEach(k => {
         const item: string = filters[k];
         // 模糊查询
@@ -25,6 +28,11 @@ export default function (router: Router, model: string, method: string = 'crud',
         if (k === '_id') {
           filters[k] = new ObjectId(item);
         }
+        // 携带排序信息
+        if (k.substr(0, 6) === 'order.') {
+          sortObj = {[k.substr(6)]: +filters[k]};
+          delete filters[k];
+        }
       });
       // 状态非-1，正常
       filters.status = {$ne: -1};
@@ -38,7 +46,7 @@ export default function (router: Router, model: string, method: string = 'crud',
         return await db
           .collection(model)
           .find(filters, findOptions)
-          .sort({ctime: -1})
+          .sort(sortObj)
           .skip(+offset)
           .limit(+count)
           .toArray();

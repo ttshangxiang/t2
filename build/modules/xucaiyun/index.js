@@ -175,6 +175,8 @@ router.post('/comments/reply/:id', (ctx) => __awaiter(this, void 0, void 0, func
     }));
     ctx.body = { code: 0, data: r };
 }));
+// 生涯
+crud_1.default(router, 'shengya');
 base_1.default.use(router.routes());
 base_1.default.use(router.allowedMethods());
 //# sourceMappingURL=index.js.map
