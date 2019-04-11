@@ -51,7 +51,12 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
                 }
             });
             // 状态非-1，正常
-            filters.status = { $ne: -1 };
+            if (filters.status === undefined) {
+                filters.status = { $ne: -1 };
+            }
+            else {
+                filters.status = +filters.status;
+            }
             const total = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
                     .collection(model)

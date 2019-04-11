@@ -35,7 +35,11 @@ export default function (router: Router, model: string, method: string = 'crud',
         }
       });
       // 状态非-1，正常
-      filters.status = {$ne: -1};
+      if (filters.status === undefined) {
+        filters.status = {$ne: -1};
+      } else {
+        filters.status = + filters.status;
+      }
       const total = await DB(async (db) => {
         return await db
           .collection(model)
