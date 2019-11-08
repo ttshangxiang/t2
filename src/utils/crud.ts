@@ -14,11 +14,12 @@ export default function (router: Router, model: string, method: string = 'crud',
       // 排序
       // 默认排序
       let sortObj: any = {ctime: -1};
+      filters['$or'] = filters['$or'] || [];
       Object.keys(filters).forEach(k => {
         const item: string = filters[k];
         // 模糊查询
         if (item.substr(0,5) === 'like.') {
-          filters[k] = new RegExp(item.substr(5));
+          filters['$or'].push({k: new RegExp(item.substr(5))});
         }
         // 被包含
         if (item.substr(0,9) === 'includes.') {

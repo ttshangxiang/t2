@@ -21,24 +21,27 @@
   "homepage": "https://github.com/ttshangxiang/t2#readme",
   "dependencies": {
     "@types/busboy": "^0.2.3",
+    "@types/highlight.js": "^9.12.3",
     "@types/koa": "^2.0.48",
     "@types/koa-bodyparser": "^4.2.1",
     "@types/koa-router": "^7.0.37",
     "@types/koa-static": "^4.0.0",
+    "@types/markdown-it": "0.0.9",
     "@types/mkdirp": "^0.5.2",
     "@types/mongodb": "^3.1.18",
     "@types/sharp": "^0.21.0",
     "busboy": "^0.2.14",
+    "highlight.js": "^9.15.10",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "markdown-it": "^10.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.23.0",
     "mongodb": "^3.1.10",
     "nodemon": "^1.18.9",
     "pm2": "^3.2.4",
-    "request": "^2.88.0",
-    "sharp": "^0.21.1"
+    "request": "^2.88.0"
   }
 }

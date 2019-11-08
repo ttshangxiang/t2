@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -12,8 +13,10 @@ var __rest = (this && this.__rest) || function (s, e) {
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
     if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
-            t[p[i]] = s[p[i]];
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -33,7 +36,7 @@ const router = new Router({
     prefix: '/xucaiyun'
 });
 // 新增资源
-router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.post('/res', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const groupId = ctx.query.groupId;
     const _a = yield upload_1.default(ctx), { files } = _a, body = __rest(_a, ["files"]);
     if (groupId) {
@@ -64,7 +67,7 @@ router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
     body.ctime = body.utime = dateUtil.now();
     // 状态0，正常
     body.status = 0;
-    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
         return yield db
             .collection('res')
             .insertOne(body);
@@ -72,13 +75,13 @@ router.post('/res', (ctx) => __awaiter(this, void 0, void 0, function* () {
     ctx.body = { code: 0, data: r, insert: body, _id: r.insertedId };
 }));
 // 资源修改分组
-router.put('/res/group/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.put('/res/group/:id', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const id = ctx.params.id;
     const { adds = [], subs = [] } = ctx.request.body;
     const result = [];
     // 新增
     if (adds.length > 0) {
-        const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
             return yield db
                 .collection('res')
                 .updateMany({ _id: { $in: adds.map((o) => new mongodb_1.ObjectId(o)) } }, { $addToSet: { groups: id } });
@@ -87,7 +90,7 @@ router.put('/res/group/:id', (ctx) => __awaiter(this, void 0, void 0, function* 
     }
     // 取消
     if (subs.length > 0) {
-        const r2 = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        const r2 = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
             return yield db
                 .collection('res')
                 .updateMany({ _id: { $in: subs.map((o) => new mongodb_1.ObjectId(o)) } }, { $pull: { groups: id } });
@@ -98,9 +101,9 @@ router.put('/res/group/:id', (ctx) => __awaiter(this, void 0, void 0, function* 
 }));
 crud_1.default(router, 'res');
 // 资源分组
-router.put('/resgroup/refresh/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.put('/resgroup/refresh/:id', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const id = ctx.params.id;
-    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
         return yield db
             .collection('res')
             .find({ groups: { $elemMatch: { $eq: id } }, type: new RegExp('image') })
@@ -109,7 +112,7 @@ router.put('/resgroup/refresh/:id', (ctx) => __awaiter(this, void 0, void 0, fun
             .toArray();
     }));
     if (r && r[0] && r[0].thumb) {
-        const r2 = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+        const r2 = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
             return yield db
                 .collection('resgroup')
                 .updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: {
@@ -124,8 +127,8 @@ router.put('/resgroup/refresh/:id', (ctx) => __awaiter(this, void 0, void 0, fun
 }));
 crud_1.default(router, 'resgroup');
 // 相册
-router.get('/albums', (ctx) => __awaiter(this, void 0, void 0, function* () {
-    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+router.get('/albums', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
         return yield db
             .collection('resgroup')
             .find({ status: 1, type: 'albums' })
@@ -135,8 +138,8 @@ router.get('/albums', (ctx) => __awaiter(this, void 0, void 0, function* () {
     ctx.body = { code: 0, data: r };
 }));
 // 文章类型
-router.get('/words', (ctx) => __awaiter(this, void 0, void 0, function* () {
-    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+router.get('/words', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
         return yield db
             .collection('resgroup')
             .find({ status: 1, type: 'words' })
@@ -146,7 +149,7 @@ router.get('/words', (ctx) => __awaiter(this, void 0, void 0, function* () {
     ctx.body = { code: 0, data: r };
 }));
 // 硬核密码
-router.post('/res/password', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.post('/res/password', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const body = ctx.request.body;
     let r = { code: -1, message: 'error' };
     const filePath = path.resolve(__dirname, '../../../../respassword.txt');
@@ -163,12 +166,12 @@ router.post('/res/password', (ctx) => __awaiter(this, void 0, void 0, function* 
 // 评论 (查询屏蔽email)
 crud_1.default(router, 'comments', 'crud', { projection: { email: 0, 'reply.email': 0 } });
 // 回复
-router.post('/comments/reply/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.post('/comments/reply/:id', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const body = ctx.request.body;
     const id = ctx.params.id;
     body.utime = dateUtil.now();
     body._id = new mongodb_1.ObjectId().toHexString();
-    const r = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
+    const r = yield db_1.default((db) => __awaiter(void 0, void 0, void 0, function* () {
         return yield db
             .collection('comments')
             .updateOne({ _id: new mongodb_1.ObjectId(id) }, { $push: { reply: body } });
