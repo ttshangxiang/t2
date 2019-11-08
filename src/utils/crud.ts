@@ -14,15 +14,12 @@ export default function (router: Router, model: string, method: string = 'crud',
       // 排序
       // 默认排序
       let sortObj: any = {ctime: -1};
-      filters['$or'] = filters['$or'] || [];
+      const $or: any = [];
       Object.keys(filters).forEach(k => {
-        if (k === '$or') {
-          return;
-        }
         const item: string = filters[k];
         // 模糊查询
         if (item.substr(0,5) === 'like.') {
-          filters['$or'].push({k: new RegExp(item.substr(5))});
+          $or.push({k: new RegExp(item.substr(5))});
         }
         // 被包含
         if (item.substr(0,9) === 'includes.') {
@@ -43,6 +40,10 @@ export default function (router: Router, model: string, method: string = 'crud',
         filters.status = {$ne: -1};
       } else {
         filters.status = + filters.status;
+      }
+      // $or
+      if ($or.length > 0) {
+        filters.$or = $or;
       }
       const total = await DB(async (db) => {
         return await db
