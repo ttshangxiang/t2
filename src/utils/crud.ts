@@ -16,6 +16,9 @@ export default function (router: Router, model: string, method: string = 'crud',
       let sortObj: any = {ctime: -1};
       filters['$or'] = filters['$or'] || [];
       Object.keys(filters).forEach(k => {
+        if (k === '$or') {
+          return;
+        }
         const item: string = filters[k];
         // 模糊查询
         if (item.substr(0,5) === 'like.') {
