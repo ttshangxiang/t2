@@ -19,7 +19,8 @@ export default function (router: Router, model: string, method: string = 'crud',
         const item: string = filters[k];
         // 模糊查询
         if (item.substr(0,5) === 'like.') {
-          $or.push({k: new RegExp(item.substr(5))});
+          $or.push({[k]: new RegExp(item.substr(5))});
+          delete filters[k];
         }
         // 被包含
         if (item.substr(0,9) === 'includes.') {

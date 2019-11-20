@@ -33,12 +33,13 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
             // 排序
             // 默认排序
             let sortObj = { ctime: -1 };
-            filters['$or'] = filters['$or'] || [];
+            const $or = [];
             Object.keys(filters).forEach(k => {
                 const item = filters[k];
                 // 模糊查询
                 if (item.substr(0, 5) === 'like.') {
-                    filters['$or'].push({ k: new RegExp(item.substr(5)) });
+                    $or.push({ [k]: new RegExp(item.substr(5)) });
+                    delete filters[k];
                 }
                 // 被包含
                 if (item.substr(0, 9) === 'includes.') {
@@ -60,6 +61,10 @@ function default_1(router, model, method = 'crud', findOptions = {}) {
             }
             else {
                 filters.status = +filters.status;
+            }
+            // $or
+            if ($or.length > 0) {
+                filters.$or = $or;
             }
             const total = yield db_1.default((db) => __awaiter(this, void 0, void 0, function* () {
                 return yield db
